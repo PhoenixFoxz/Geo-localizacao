@@ -1,10 +1,29 @@
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, Button, Image, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import * as Location from "expo-location";
 
 export default function App() {
   /* Coordenadas para o Marker que será aplicado ao MapView */
+
+  const [minhaLocalizacao, setMinhaLocalizacao] = useState(null);
+
+  useEffect(() => {
+    async function obterLocalizacao() {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Ops!", "Você não autorizou o uso de geolocalização");
+        return;
+      }
+
+      let localizacaoAtual = await Location.getCurrentPositionAsync({});
+
+      setMinhaLocalizacao(localizacaoAtual);
+    }
+
+    obterLocalizacao();
+  }, []);
 
   const [localizacao, setLocalizacao] = useState({
     latitude: -33.867886,
@@ -42,17 +61,21 @@ export default function App() {
     <>
       <StatusBar />
       <View style={styles.container}>
-        <MapView
-          onPress={marcarLocal}
-          mapType="hybrid"
-          style={styles.mapa}
-          initialRegion={regiaoInicialMapa}
-        >
-          <Marker coordinate={localizacao} draggable>
-            {/* Ícone personalizado */}
-            <Image source={require("./assets/ghost.png")} />
-          </Marker>
-        </MapView>
+        <View style={styles.viewBotao}>
+          <Button title="Onde estou?" onPress={marcarLocal} />
+        </View>
+        <View style={styles.viewMapa}>
+          <MapView
+            mapType="hybrid"
+            style={styles.mapa}
+            initialRegion={regiaoInicialMapa}
+          >
+            <Marker coordinate={localizacao} draggable>
+              {/* Ícone personalizado */}
+              <Image source={require("./assets/ghost.png")} />
+            </Marker>
+          </MapView>
+        </View>
       </View>
     </>
   );
