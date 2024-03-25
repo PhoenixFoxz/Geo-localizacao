@@ -53,8 +53,12 @@ export default function App() {
   const marcarLocal = () => {
     setLocalizacao({
       // Obtendo novos valores a partir da geolocalização da posição do usuário
+      /* Aqui é necessário acessar a propriedade 'coords' do state minhaLocalizacao.
+      Os valores desta propriedade correspondem ao que o Location conseguiu obter à partir do GPS do aparelho */
       latitude: minhaLocalizacao.coords.latitude,
       longitude: minhaLocalizacao.coords.longitude,
+
+      /* Aqui usamos deltas bem baixos para poder aproximar bastante a visualização do mapa e do marker. */
       latitudeDelta: 0.02,
       longitudeDelta: 0.01,
     });
